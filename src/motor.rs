@@ -33,7 +33,10 @@ impl Motor {
                 self.dir_pin.set_low();
             }
 
-            let duty_cycle = (*self.duty_cycle.lock().unwrap()).abs();
+            let mut duty_cycle = (*self.duty_cycle.lock().unwrap()).abs();
+            
+            duty_cycle = duty_cycle.max(0.);
+            duty_cycle = duty_cycle.min(1.);
 
             let high_time = period.mul_f64(duty_cycle);
             let low_time = period - high_time;
