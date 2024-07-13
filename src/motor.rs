@@ -34,7 +34,7 @@ impl Motor {
             }
 
             let mut duty_cycle = (*self.duty_cycle.lock().unwrap()).abs();
-            
+
             duty_cycle = duty_cycle.max(0.);
             duty_cycle = duty_cycle.min(1.);
 

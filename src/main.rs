@@ -1,56 +1,18 @@
-// there are exsamples
-
 mod motor;
-use motor::Motor;
-use std::collections::HashMap;
-use std::{thread, time};
+mod udp_communication;
 
+use motor::Motor;
 
 const FREQUENCY: f64 = 1000.;
 const START_DUTY_CYCLE: f64 = 0.1;
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let setup_motors = [
+fn main() {
+    let setup_motors = vec![
         Motor::new(16, 1, START_DUTY_CYCLE, FREQUENCY),
         Motor::new(26, 2, START_DUTY_CYCLE, FREQUENCY),
         Motor::new(6, 3, START_DUTY_CYCLE, FREQUENCY),
     ];
 
-    let motors = HashMap::from([
-        ("L", setup_motors[0].duty_cycle.clone()),
-        ("R", setup_motors[1].duty_cycle.clone()),
-        ("U", setup_motors[2].duty_cycle.clone()),
-    ]);
+    udp_communication::run_motor(setup_motors, "8080");
 
-    // start
-    {
-        for mut setup_motor in setup_motors {
-            thread::spawn(move || {
-                setup_motor.start();
-            });
-        }
-    }
-
-    // change
-    {
-        let some = time::Duration::from_millis(5000);
-        thread::sleep(some);
-
-        for i in ["L", "R", "U"] {
-            let mut duty_cycle = motors[i].lock().unwrap();
-            *duty_cycle = 1.;
-        }
-
-        thread::sleep(some);
-
-        for i in ["L", "R", "U"] {
-            let mut duty_cycle = motors[i].lock().unwrap();
-            *duty_cycle = 0.;
-        }
-
-        // なぜか少し待たないと暴走する
-        let some = time::Duration::from_millis(1);
-        thread::sleep(some);
-    }
-
-    Ok(())
+    udp_communication::send_pwm_udp("8081", "0.0.0.0:8080", 0, 0.5);
 }
