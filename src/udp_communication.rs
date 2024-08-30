@@ -64,18 +64,17 @@ fn judge(recv_json: String, motors: &mut Vec<Arc<Mutex<f64>>>) {
 pub fn send_pwm_udp(own_port: &str, broadcast_addr: &str, id: usize, power: f64) {
     let send_data = JsonData { id, power };
 
-    match UdpSocket::bind(OWN_ADDR.to_owned() + own_port) {
+    match UdpSocket::bind(OWN_ADDR.to_owned() + ":" + own_port) {
         Ok(sock) => {
             sock.set_broadcast(true).expect("failed to set broadcast");
-            loop {
-                let input = serde_json::to_string(&send_data).unwrap();
+            let input = serde_json::to_string(&send_data).unwrap();
 
-                match sock.send_to(input.as_bytes(), broadcast_addr) {
-                    Ok(v) => println!("send message : {}", &input[..v]),
-                    Err(v) => println!("failed to send message:{}", v),
-                }
+            match sock.send_to(input.as_bytes(), broadcast_addr) {
+                Ok(v) => println!("send message : {}", &input[..v]),
+                Err(v) => println!("failed to send message:{}", v),
             }
         }
         Err(v) => println!("failed to start sender:{}", v),
     }
 }
+
