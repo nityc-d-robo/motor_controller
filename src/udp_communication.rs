@@ -34,7 +34,7 @@ pub fn run_motor(setup_motors: Vec<Motor>, port: &str) {
 }
 
 fn recv_pwm_udp(motors: &mut Vec<Arc<Mutex<f64>>>, port: &str) {
-    match UdpSocket::bind(OWN_ADDR.to_owned() + port) {
+    match UdpSocket::bind(OWN_ADDR.to_owned() + ":" + port) {
         Ok(sock) => loop {
             let mut buff = [0; 200];
             match sock.recv_from(&mut buff) {
