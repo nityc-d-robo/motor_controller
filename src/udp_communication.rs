@@ -1,6 +1,4 @@
-use crate::motor::Motor;
 use std::sync::{Arc, Mutex};
-use std::thread;
 
 use std::net::UdpSocket;
 
@@ -15,25 +13,7 @@ struct JsonData {
 }
 const OWN_ADDR: &str = "0.0.0.0";
 
-pub fn run_motor(setup_motors: Vec<Motor>, port: &str) {
-    let mut motors = setup_motors
-        .iter()
-        .map(|pwm| pwm.duty_cycle.clone())
-        .collect::<Vec<_>>();
-
-    // start
-    {
-        for mut setup_motor in setup_motors {
-            thread::spawn(move || {
-                setup_motor.start();
-            });
-        }
-    }
-
-    recv_pwm_udp(&mut motors, port);
-}
-
-fn recv_pwm_udp(motors: &mut Vec<Arc<Mutex<f64>>>, port: &str) {
+pub fn recv_pwm_udp(motors: &mut Vec<Arc<Mutex<f64>>>, port: &str) {
     match UdpSocket::bind(OWN_ADDR.to_owned() + ":" + port) {
         Ok(sock) => loop {
             let mut buff = [0; 200];
@@ -77,4 +57,3 @@ pub fn send_pwm_udp(own_port: &str, broadcast_addr: &str, id: usize, power: f64)
         Err(v) => println!("failed to start sender:{}", v),
     }
 }
-
