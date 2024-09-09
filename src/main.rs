@@ -24,10 +24,12 @@ fn main() {
 
     //  Changing motors changes the rotation speed of the motor Maximum value 1 Minimum value -1
 
-    udp_communication::recv_pwm_udp(&mut motors, "8080");
-
     // With send_pwm_udp and recv_pwm_udp, it can be operated remotely.
+    loop {
+        udp_communication::recv_pwm_udp(&mut motors, "8080");
+    }
 
-    // Note that the following line is not executed because it stops at recv_pwm_udp
-    udp_communication::send_pwm_udp("8082", "0.0.0.0:8080", 0, 0.5);
+    // Note that the following line is not executed because it stops at loop.
+    // Execute the following from another program
+    udp_communication::send_pwm_udp("8081", "0.0.0.0:8080", 0, 0.5);
 }

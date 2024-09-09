@@ -15,7 +15,7 @@ const OWN_ADDR: &str = "0.0.0.0";
 
 pub fn recv_pwm_udp(motors: &mut Vec<Arc<Mutex<f64>>>, port: &str) {
     match UdpSocket::bind(OWN_ADDR.to_owned() + ":" + port) {
-        Ok(sock) => loop {
+        Ok(sock) => {
             let mut buff = [0; 200];
             match sock.recv_from(&mut buff) {
                 Ok((recv_size, _src)) => match String::from_utf8(buff[..recv_size].to_vec()) {
@@ -26,7 +26,7 @@ pub fn recv_pwm_udp(motors: &mut Vec<Arc<Mutex<f64>>>, port: &str) {
                 },
                 Err(_) => println!("failed to receive message"),
             }
-        },
+        }
         Err(recv_json) => {
             println!("failed to start udp receiver:{}", recv_json);
         }
