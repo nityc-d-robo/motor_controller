@@ -1,5 +1,4 @@
-//! # phrases
-//! This is sample code.
-
+#[cfg(target_os = "linux")]
 pub mod motor;
+
 pub mod udp_communication;
